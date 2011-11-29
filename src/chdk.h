@@ -23,26 +23,56 @@
 #define S_HBIT 40
 
 #define S_SEND_BITS 	7
-#define MAX_COMMANDS	20
+#define MAX_COMMANDS	255
 #define DEADTIME		250  // min. time between to commands
 
 #define TIMER_CLOCK_FREQ 2000000.0 //2MHz for /8 prescale from 16MHz
 
 
-volatile char cmdQueque[MAX_COMMANDS][S_SEND_BITS] = {};
-volatile int quequeLen = 0;
+volatile char cmdQueque[MAX_COMMANDS][2];
+volatile int quequeWrite = 0;
+volatile int quequeRead = 0;
+volatile int last = 0;
 volatile int timerLoadValue;
 volatile int latency;
 
 
+void initCmdQueque()
+{
+   for (int i=0; i<MAX_COMMANDS; i++) cmdQueque[i][0] = 0;
+   quequeWrite = 0;
+   quequeRead = 0;
+}
+   
+
 void chdkSend(const char command[])
 {
-	static unsigned int last = 0;
-
-	if (quequeLen < MAX_COMMANDS && micros()-DEADTIME > last)
+	if (micros()-DEADTIME > last)
 	{
-		for (int i=0; i<S_SEND_BITS; i++) cmdQueque[quequeLen][i] = command[i];
-		quequeLen++;
+		for (int i=0; i<strlen(command); i++)
+    {
+       case command[i]
+       {
+       case 'S':
+          cmdQueque[quequeWrite][0] = S_START;
+          cmdQueque[quequeWrite][1] = 1;
+          break;
+       case '.':
+          cmdQueque[quequeWrite][0] = S_PAUSE;
+          cmdQueque[quequeWrite][1] = 0;
+          break;
+       case '1':
+          cmdQueque[quequeWrite][0] = S_HBIT;
+          cmdQueque[quequeWrite][1] = 1;
+          break;
+       case '0':
+          cmdQueque[quequeWrite][0] = S_LBIT;
+          cmdQueque[quequeWrite][1] = 1;
+          break;
+       }
+       if (++quequeWrite = MAX_COMMANDS) quequeWrite = 0;
+       cmdQueque[quequeWrite][0] = 0;
+    }
 	}
 	last = micros();
 }
@@ -74,52 +104,19 @@ unsigned char SetupTimer2(float timeoutFrequency){
 
 
 ISR(TIMER2_OVF_vect) {
-	static int bitPos = 0;
 	static int wait = 0;
 
 
 	if (!wait)
 	{
-		if (quequeLen>0)
-		{
-			char bit = cmdQueque[0][bitPos];
-			switch (bit)
-			{
-			case 'S':
-				wait = S_START;
-				digitalWrite(CAMPIN, HIGH);
-				break;
-			case '.':
-				wait = S_PAUSE;
-				digitalWrite(CAMPIN, LOW);
-				break;
-			case '0':
-				wait = S_LBIT;
-				digitalWrite(CAMPIN, HIGH);
-				break;
-			case '1':
-				wait = S_HBIT;
-				digitalWrite(CAMPIN, HIGH);
-				break;
-			}
-			bitPos++;
-		}
-
-		if (quequeLen>0 && bitPos == S_SEND_BITS)
-		{
-			digitalWrite(CAMPIN, LOW);
-
-			for (int i=1; i<quequeLen; i++)
-			{
-				for (int j=0; j<S_SEND_BITS; j++)
-				{
-					cmdQueque[i-1][j] = cmdQueque[i][j];
-				}
-			}
-			quequeLen--;
-			bitPos = 0;
-		}
-	} else {
+    digitalWrite(CAMPIN, LOW);
+    if (cmdQueque[quequeRead][0] != 0)
+    {
+       wait = cmdQueque[quequeRead][0];
+       if (cmdQueque[quequeRead][1]) digitalWrite(CAMPIN, cmdQueque[quequeRead][1]);
+       if (++quequeRead = MAX_COMMANDS) quequeRead = 0;
+    }
+  } else {
 		wait--;
 	}
 	latency=TCNT2;
