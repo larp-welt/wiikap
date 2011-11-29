@@ -52,6 +52,7 @@ void setup()
 	// setup Timer Interrupt
 	Serial.println("[system]\tsetup timer");
 	// gives me 13% processor time for irq ... maybe 100 will work too?
+	resetCmdQueque();
 	timerLoadValue = SetupTimer2(1000);
 
 	// set camera defaults

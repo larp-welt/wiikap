@@ -37,9 +37,8 @@ volatile int timerLoadValue;
 volatile int latency;
 
 
-void initCmdQueque()
+void resetCmdQueque()
 {
-   for (int i=0; i<MAX_COMMANDS; i++) cmdQueque[i][0] = 0;
    quequeWrite = 0;
    quequeRead = 0;
 }
@@ -47,32 +46,34 @@ void initCmdQueque()
 
 void chdkSend(const char command[])
 {
+    static unsigned int last = 0;
+
 	if (micros()-DEADTIME > last)
 	{
-		for (int i=0; i<strlen(command); i++)
-    {
-       case command[i]
-       {
-       case 'S':
-          cmdQueque[quequeWrite][0] = S_START;
-          cmdQueque[quequeWrite][1] = 1;
-          break;
-       case '.':
-          cmdQueque[quequeWrite][0] = S_PAUSE;
-          cmdQueque[quequeWrite][1] = 0;
-          break;
-       case '1':
-          cmdQueque[quequeWrite][0] = S_HBIT;
-          cmdQueque[quequeWrite][1] = 1;
-          break;
-       case '0':
-          cmdQueque[quequeWrite][0] = S_LBIT;
-          cmdQueque[quequeWrite][1] = 1;
-          break;
-       }
-       if (++quequeWrite == MAX_COMMANDS) quequeWrite = 0;
-       cmdQueque[quequeWrite][0] = 0;
-    }
+		for (int unsigned i=0; i<strlen(command); i++)
+		{
+		   switch (command[i])
+		   {
+			   case 'S':
+				  cmdQueque[quequeWrite][0] = S_START;
+				  cmdQueque[quequeWrite][1] = 1;
+				  break;
+			   case '.':
+				  cmdQueque[quequeWrite][0] = S_PAUSE;
+				  cmdQueque[quequeWrite][1] = 0;
+				  break;
+			   case '1':
+				  cmdQueque[quequeWrite][0] = S_HBIT;
+				  cmdQueque[quequeWrite][1] = 1;
+				  break;
+			   case '0':
+				  cmdQueque[quequeWrite][0] = S_LBIT;
+				  cmdQueque[quequeWrite][1] = 1;
+				  break;
+		   }
+		   if (++quequeWrite == MAX_COMMANDS) quequeWrite = 0;
+		   cmdQueque[quequeWrite][0] = 0;
+		}
 	}
 	last = micros();
 }
@@ -105,18 +106,20 @@ unsigned char SetupTimer2(float timeoutFrequency){
 
 ISR(TIMER2_OVF_vect) {
 	static int wait = 0;
+	static int state = 1;
 
 
 	if (!wait)
 	{
-    digitalWrite(CAMPIN, LOW);   // XXX
-    if (cmdQueque[quequeRead][0] != 0)
-    {
-       wait = cmdQueque[quequeRead][0];
-       if (cmdQueque[quequeRead][1]) digitalWrite(CAMPIN, cmdQueque[quequeRead][1]);
-       if (++quequeRead == MAX_COMMANDS) quequeRead = 0;
-    }
-  } else {
+		if (state) digitalWrite(CAMPIN, LOW);
+		if (quequeRead != quequeWrite)
+		{
+			wait = cmdQueque[quequeRead][0];
+			if (cmdQueque[quequeRead][1]) digitalWrite(CAMPIN, cmdQueque[quequeRead][1]);
+			state = cmdQueque[quequeRead][1];
+			if (++quequeRead == MAX_COMMANDS) quequeRead = 0;
+		}
+	} else {
 		wait--;
 	}
 	latency=TCNT2;
