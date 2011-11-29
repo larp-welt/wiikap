@@ -12,7 +12,7 @@
 #define SERIAL_COM_SPEED 9600
 
 // functions
-//#define STABI
+#define STABI
 
 // RC channels
 #define  TILT         1
