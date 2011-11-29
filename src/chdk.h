@@ -70,7 +70,7 @@ void chdkSend(const char command[])
           cmdQueque[quequeWrite][1] = 1;
           break;
        }
-       if (++quequeWrite = MAX_COMMANDS) quequeWrite = 0;
+       if (++quequeWrite == MAX_COMMANDS) quequeWrite = 0;
        cmdQueque[quequeWrite][0] = 0;
     }
 	}
@@ -109,12 +109,12 @@ ISR(TIMER2_OVF_vect) {
 
 	if (!wait)
 	{
-    digitalWrite(CAMPIN, LOW);
+    digitalWrite(CAMPIN, LOW);   // XXX
     if (cmdQueque[quequeRead][0] != 0)
     {
        wait = cmdQueque[quequeRead][0];
        if (cmdQueque[quequeRead][1]) digitalWrite(CAMPIN, cmdQueque[quequeRead][1]);
-       if (++quequeRead = MAX_COMMANDS) quequeRead = 0;
+       if (++quequeRead == MAX_COMMANDS) quequeRead = 0;
     }
   } else {
 		wait--;
