@@ -23,7 +23,7 @@ function kap.readCommand()
 	-- wait for start
 	repeat 
 		s = get_usb_power()
-	until s <= 6
+	until s >= 6
 
 	-- get bits
 	for i=1,maxBits do
