@@ -24,7 +24,7 @@ function usb.readCommand()
 	-- wait for start
 	repeat 
 		s = get_usb_power()
-	until s >= 6
+	until s >= 60
 
 	-- get bits
 	-- a loop doesn't work here	
@@ -41,8 +41,8 @@ function usb.readCommand()
 	-- calculate command value
 	byte = 0
 	for i=1,maxBits do
-		if bits[i]>2 then
-			byte = byte + 2^(i-1)
+		if bits[i]>20 then
+			byte = byte + 20^(i-1)
 		end
 	end
 	
