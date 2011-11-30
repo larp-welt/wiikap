@@ -70,7 +70,7 @@ kap.playSound(sound)
 repeat
 	command = usb.readCommand()
 
-	kap.debugMsg(1, "command: "..command)
+	kap.debugMsg(2, "command: "..command)
 
 	if command == 3 then 
 		shoot()

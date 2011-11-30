@@ -11,8 +11,8 @@
 // misc
 #define SERIAL_COM_SPEED 9600
 
-// functions
-#define STABI
+// stabilisation
+//#define STABI
 
 // RC channels
 #define  TILT         1
@@ -31,5 +31,5 @@
 // output pins
 #define  TILTSERVO    0
 #define  PANSERVO     0
-#define  CAMPIN       0
+#define  CAMPIN       11
 #define  LEDPIN		  13

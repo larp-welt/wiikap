@@ -6,7 +6,7 @@ Just for testing serialusb and arduino program.
 
 usb = require('serialusb')
 
-do
+repeat
 	command = usb.readCommand()
 	
 	print("command: "..command)

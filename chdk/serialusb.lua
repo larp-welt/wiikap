@@ -11,14 +11,15 @@ Idea stolen from CHDKlover
 http://forum.chdk-treff.de/viewtopic.php?f=20&t=356
 ]]
 
-local kap = {}
+local usb = {}
 
-function kap.readCommand()
+function usb.readCommand()
 	-- waits for next command on usb and 
 	-- returns it as byte value.
 	
 	maxBits = 3
 	bits = {}
+	s = 0
 	
 	-- wait for start
 	repeat 
@@ -26,20 +27,26 @@ function kap.readCommand()
 	until s >= 6
 
 	-- get bits
-	for i=1,maxBits do
-		repeat
-			bits[i] = get_usb_power()
-		until bits[i] > 0
-	end
+	-- a loop doesn't work here	
+	repeat
+		bits[1] = get_usb_power()
+	until bits[1] > 0
+	repeat
+		bits[2] = get_usb_power()
+	until bits[2] > 0
+	repeat
+		bits[3] = get_usb_power()
+	until bits[3] > 0
 	
 	-- calculate command value
 	byte = 0
 	for i=1,maxBits do
-		if bits[0]>2 then
+		if bits[i]>2 then
 			byte = byte + 2^(i-1)
 		end
 	end
 	
+	print(byte..": "..s.."-"..bits[1].."."..bits[2].."."..bits[3])
 	-- return command
 	return byte
 end

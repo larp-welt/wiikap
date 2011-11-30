@@ -8,31 +8,30 @@
  *  http://forum.chdk-treff.de/viewtopic.php?f=20&t=356
  */
 
-#define CHDK_ZOOM_IN		"S.1.0.0"
-#define CHDK_ZOOM_OUT		"S.0.1.0"
-#define CHDK_SHOOT			"S.1.1.0"
-#define CHDK_EXP_MINUS		"S.0.0.1"
-#define CHDK_EXP_ZERO		"S.1.0.1"
-#define CHDK_EXP_PLUS		"S.0.1.1"
-#define CHDK_EMERGENCY		"S.1.1.1"
-#define CHDK_NULL			"S.0.0.0"
+#define CHDK_ZOOM_IN		"S.1.0.0-"  // 1
+#define CHDK_ZOOM_OUT		"S.0.1.0-"  // 2
+#define CHDK_SHOOT			"S.1.1.0-"  // 3
+#define CHDK_EXP_MINUS		"S.0.0.1-"  // 4
+#define CHDK_EXP_ZERO		"S.1.0.1-"  // 5
+#define CHDK_EXP_PLUS		"S.0.1.1-"  // 6
+#define CHDK_EMERGENCY		"S.1.1.1-"  // 7
+#define CHDK_NULL			"S.0.0.0-"  // 8
 
-#define S_PAUSE 30
-#define S_START 70
-#define S_LBIT 10
-#define S_HBIT 40
+#define S_PAUSE 300
+#define S_START 700
+#define S_LBIT 100
+#define S_HBIT 400
 
 #define S_SEND_BITS 	7
-#define MAX_COMMANDS	255
-#define DEADTIME		250  // min. time between to commands
+#define MAX_COMMANDS	128
+#define DEADTIME		500  // min. time between to commands
 
 #define TIMER_CLOCK_FREQ 2000000.0 //2MHz for /8 prescale from 16MHz
 
 
-volatile char cmdQueque[MAX_COMMANDS][2];
+volatile int cmdQueque[MAX_COMMANDS][2];
 volatile int quequeWrite = 0;
 volatile int quequeRead = 0;
-volatile int last = 0;
 volatile int timerLoadValue;
 volatile int latency;
 
@@ -52,27 +51,33 @@ void chdkSend(const char command[])
 	{
 		for (int unsigned i=0; i<strlen(command); i++)
 		{
-		   switch (command[i])
+		   if (command[i] == 'S')
 		   {
-			   case 'S':
-				  cmdQueque[quequeWrite][0] = S_START;
-				  cmdQueque[quequeWrite][1] = 1;
-				  break;
-			   case '.':
-				  cmdQueque[quequeWrite][0] = S_PAUSE;
-				  cmdQueque[quequeWrite][1] = 0;
-				  break;
-			   case '1':
-				  cmdQueque[quequeWrite][0] = S_HBIT;
-				  cmdQueque[quequeWrite][1] = 1;
-				  break;
-			   case '0':
-				  cmdQueque[quequeWrite][0] = S_LBIT;
-				  cmdQueque[quequeWrite][1] = 1;
-				  break;
+			   cmdQueque[quequeWrite][0] = S_START;
+			   cmdQueque[quequeWrite][1] = 1;
 		   }
-		   if (++quequeWrite == MAX_COMMANDS) quequeWrite = 0;
-		   cmdQueque[quequeWrite][0] = 0;
+		   if (command[i] == '.')
+		   {
+			   cmdQueque[quequeWrite][0] = S_PAUSE;
+			   cmdQueque[quequeWrite][1] = 0;
+		   }
+		   if (command[i] == '1')
+		   {
+			   cmdQueque[quequeWrite][0] = S_HBIT;
+			   cmdQueque[quequeWrite][1] = 1;
+		   }
+		   if (command[i] == '0')
+		   {
+			   cmdQueque[quequeWrite][0] = S_LBIT;
+			   cmdQueque[quequeWrite][1] = 1;
+		   }
+		   if (command[i] == '-')
+		   {
+			   cmdQueque[quequeWrite][0] = S_START;
+			   cmdQueque[quequeWrite][1] = 0;
+		   }
+
+		   if (++quequeWrite >= MAX_COMMANDS) quequeWrite = 0;
 		}
 	}
 	last = micros();
@@ -108,16 +113,15 @@ ISR(TIMER2_OVF_vect) {
 	static int wait = 0;
 	static int state = 1;
 
-
 	if (!wait)
 	{
 		if (state) digitalWrite(CAMPIN, LOW);
 		if (quequeRead != quequeWrite)
 		{
 			wait = cmdQueque[quequeRead][0];
-			if (cmdQueque[quequeRead][1]) digitalWrite(CAMPIN, cmdQueque[quequeRead][1]);
 			state = cmdQueque[quequeRead][1];
-			if (++quequeRead == MAX_COMMANDS) quequeRead = 0;
+			if (state) digitalWrite(CAMPIN, HIGH);
+			if (++quequeRead >= MAX_COMMANDS) quequeRead = 0;
 		}
 	} else {
 		wait--;

@@ -71,13 +71,15 @@ void loop()
 	static uint32_t rcTime  = 0;
 	static int exposure = 0;
 
+	static int count = 50; // TTT
+
 	currentTime = micros();
 
 	if (currentTime > (rcTime + 20000) ) { // 50Hz = 20000
 		rcTime = currentTime;
 		computeRC();
 
-
+/*
 		// Exporsure Mode
 		if (rcData[EXPOSURE] < 1300 && exposure != -1)
 		{
@@ -118,7 +120,11 @@ void loop()
 			Serial.println("[chdk]\t\tshoot");
 			signalLed(SIG_SHOOT);
 		}
-
+*/
+		if (!count--) {
+			chdkSend(CHDK_ZOOM_IN); // TTT
+			count = 50;
+		}
 
 		// Servos
 		#ifndef STABI
