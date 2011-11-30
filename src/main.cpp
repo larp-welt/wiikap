@@ -71,15 +71,12 @@ void loop()
 	static uint32_t rcTime  = 0;
 	static int exposure = 0;
 
-	static int count = 50; // TTT
-
 	currentTime = micros();
 
 	if (currentTime > (rcTime + 20000) ) { // 50Hz = 20000
 		rcTime = currentTime;
 		computeRC();
 
-/*
 		// Exporsure Mode
 		if (rcData[EXPOSURE] < 1300 && exposure != -1)
 		{
@@ -119,16 +116,6 @@ void loop()
 			chdkSend(CHDK_SHOOT);
 			Serial.println("[chdk]\t\tshoot");
 			signalLed(SIG_SHOOT);
-		}
-*/
-
-		 // TTT
-		const int values[] = {CHDK_ZOOM_IN, CHDK_ZOOM_OUT, CHDK_SHOOT, CHDK_EXP_MINUS, CHDK_EXP_ZERO, CHDK_EXP_PLUS};
-		static int t = 0;
-		if (!count--) {
-			chdkSend(values[t]);
-			count = 10;
-			if (++t > 5) t=0;
 		}
 
 		// Servos
