@@ -17,10 +17,10 @@
 #define CHDK_EMERGENCY		"S.1.1.1-"  // 7
 #define CHDK_NULL			"S.0.0.0-"  // 8
 
-#define S_PAUSE 300
-#define S_START 700
-#define S_LBIT 100
-#define S_HBIT 400
+#define S_PAUSE 3000
+#define S_START 7000
+#define S_LBIT 1000
+#define S_HBIT 4000
 
 #define S_SEND_BITS 	7
 #define MAX_COMMANDS	128
