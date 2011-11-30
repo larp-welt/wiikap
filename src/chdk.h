@@ -8,23 +8,17 @@
  *  http://forum.chdk-treff.de/viewtopic.php?f=20&t=356
  */
 
-#define CHDK_ZOOM_IN		"S.1.0.0-"  // 1
-#define CHDK_ZOOM_OUT		"S.0.1.0-"  // 2
-#define CHDK_SHOOT			"S.1.1.0-"  // 3
-#define CHDK_EXP_MINUS		"S.0.0.1-"  // 4
-#define CHDK_EXP_ZERO		"S.1.0.1-"  // 5
-#define CHDK_EXP_PLUS		"S.0.1.1-"  // 6
-#define CHDK_EMERGENCY		"S.1.1.1-"  // 7
-#define CHDK_NULL			"S.0.0.0-"  // 8
+#define CHDK_ZOOM_IN		2000
+#define CHDK_ZOOM_OUT		2500
+#define CHDK_SHOOT			500
+#define CHDK_EXP_MINUS		4000
+#define CHDK_EXP_ZERO		4500
+#define CHDK_EXP_PLUS	    5000
 
-#define S_PAUSE 3000
-#define S_START 7000
-#define S_LBIT 1000
-#define S_HBIT 4000
+#define S_PAUSE 300
 
-#define S_SEND_BITS 	7
 #define MAX_COMMANDS	128
-#define DEADTIME		500  // min. time between to commands
+#define DEADTIME		250  // min. time between to commands
 
 #define TIMER_CLOCK_FREQ 2000000.0 //2MHz for /8 prescale from 16MHz
 
@@ -43,42 +37,19 @@ void resetCmdQueque()
 }
    
 
-void chdkSend(const char command[])
+void chdkSend(const int command)
 {
     static unsigned int last = 0;
 
 	if (micros()-DEADTIME > last)
 	{
-		for (int unsigned i=0; i<strlen(command); i++)
-		{
-		   if (command[i] == 'S')
-		   {
-			   cmdQueque[quequeWrite][0] = S_START;
-			   cmdQueque[quequeWrite][1] = 1;
-		   }
-		   if (command[i] == '.')
-		   {
-			   cmdQueque[quequeWrite][0] = S_PAUSE;
-			   cmdQueque[quequeWrite][1] = 0;
-		   }
-		   if (command[i] == '1')
-		   {
-			   cmdQueque[quequeWrite][0] = S_HBIT;
-			   cmdQueque[quequeWrite][1] = 1;
-		   }
-		   if (command[i] == '0')
-		   {
-			   cmdQueque[quequeWrite][0] = S_LBIT;
-			   cmdQueque[quequeWrite][1] = 1;
-		   }
-		   if (command[i] == '-')
-		   {
-			   cmdQueque[quequeWrite][0] = S_START;
-			   cmdQueque[quequeWrite][1] = 0;
-		   }
-
+		   cmdQueque[quequeWrite][0] = command;
+		   cmdQueque[quequeWrite][1] = 1;
 		   if (++quequeWrite >= MAX_COMMANDS) quequeWrite = 0;
-		}
+
+		   cmdQueque[quequeWrite][0] = S_PAUSE;
+		   cmdQueque[quequeWrite][1] = 0;
+		   if (++quequeWrite >= MAX_COMMANDS) quequeWrite = 0;
 	}
 	last = micros();
 }

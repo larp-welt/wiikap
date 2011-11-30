@@ -22,6 +22,9 @@ rem For Canon A570 only
 
 @param e Sound (0..6, -1)
 @default e 3
+
+@param r Range (>=0)
+@default r 2
 ]]
 
 -- better human readable parameter names
@@ -31,6 +34,7 @@ zoomWait = x*10
 debugMode = d
 sound = e
 ev = f
+range = r
 
 kap = require('kap-utils')
 usb = require('serialusb')
@@ -72,15 +76,15 @@ repeat
 
 	kap.debugMsg(2, "command: "..command)
 
-	if command == 3 then 
+	if kap.checkRange(command, 5, range) then 
 		shoot()
 		kap.debugMsg(2, "shoot")
-	elseif command == 2 then
+	elseif kap.checkRange(command, 25, range) then
 		kap.debugMsg(2, "zoom out")
 		click("zoom_out")
 		sleep(zoomWait)
 		kap.hyperfocal(checkMode, loopWait, zoomWait)
-	elseif command == 1 then
+	elseif kap.checkRange(command, 20, range) then
 		kap.debugMsg(2, "zoom in")
 		click("zoom_in")
 		sleep(zoomWait)

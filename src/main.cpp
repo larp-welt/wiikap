@@ -121,9 +121,14 @@ void loop()
 			signalLed(SIG_SHOOT);
 		}
 */
+
+		 // TTT
+		const int values[] = {CHDK_ZOOM_IN, CHDK_ZOOM_OUT, CHDK_SHOOT, CHDK_EXP_MINUS, CHDK_EXP_ZERO, CHDK_EXP_PLUS};
+		static int t = 0;
 		if (!count--) {
-			chdkSend(CHDK_ZOOM_IN); // TTT
-			count = 50;
+			chdkSend(values[t]);
+			count = 10;
+			if (++t > 5) t=0;
 		}
 
 		// Servos
