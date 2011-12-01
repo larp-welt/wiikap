@@ -14,7 +14,7 @@
 
 #include <WProgram.h>
 #include <Servo/Servo.h>
-#include "signals.h"
+#include "blinkcodes.h"
 #include "config.h"
 #include "utils.h"
 #include "RX.h"
@@ -51,7 +51,7 @@ void setup()
 
 	// setup Timer Interrupt
 	Serial.println("[system]\tsetup timer");
-	// gives me 13% processor time for irq ... maybe 100 will work too?
+	// XXX: gives me 13% processor time for irq ...
 	resetCmdQueque();
 	timerLoadValue = SetupTimer2(1000);
 
@@ -123,8 +123,7 @@ void loop()
 			// direct through
 			panServo.writeMicroseconds(rcData[PAN]);
 			tiltServo.writeMicroseconds(rcData[TILT]);
-		#endif
-		#ifdef STABI
+		#else
 			/* do something */
 		#endif
 	}
