@@ -92,26 +92,26 @@ void loop()
 
 
 		// Exporsure Mode
-//		if (rcData[EXPOSURE] < 1300 && exposure != -1)
-//		{
-//			chdkSend(CHDK_EXP_MINUS);
-//			Serial.println("[chdk]\t\texposure: minus");
-//			exposure = -1;
-//		}
-//		if (rcData[EXPOSURE] > 1600 && exposure != 1)
-//		{
-//			chdkSend(CHDK_EXP_PLUS);
-//			Serial.println("[chdk]\t\texposure: plus");
-//			exposure = 1;
-//		}
-//		if (rcData[EXPOSURE] > 1300 && rcData[EXPOSURE] < 1600 && exposure != 0)
-//		{
-//			chdkSend(CHDK_EXP_ZERO);
-//			Serial.println("[chdk]\t\texposure: zero");
-//			exposure = 0;
-//		}
+		if (rcData[EXPOSURE] < 1300 && exposure != -1)
+		{
+			chdkSend(CHDK_EXP_MINUS);
+			Serial.println("[chdk]\t\texposure: minus");
+			exposure = -1;
+		}
+		if (rcData[EXPOSURE] > 1600 && exposure != 1)
+		{
+			chdkSend(CHDK_EXP_PLUS);
+			Serial.println("[chdk]\t\texposure: plus");
+			exposure = 1;
+		}
+		if (rcData[EXPOSURE] > 1300 && rcData[EXPOSURE] < 1600 && exposure != 0)
+		{
+			chdkSend(CHDK_EXP_ZERO);
+			Serial.println("[chdk]\t\texposure: zero");
+			exposure = 0;
+		}
 
-//		// Zoom
+		// Zoom
 		if (rcData[ZOOM] < 1300 && zoomWait == 0)
 		{
 			chdkSend(CHDK_ZOOM_OUT);
@@ -126,17 +126,17 @@ void loop()
 		}
 
 
-//		// Shoot
-//		if (rcData[SHOOT] < 1400 || rcData[SHOOT] > 1600)
-//		{
-//			if (shootWait == 0)
-//			{
-//				chdkSend(CHDK_SHOOT);
-//				Serial.println("[chdk]\t\tshoot");
-//				signalLed(SIG_SHOOT);
-//				shootWait = WAIT_SHOOT;
-//			}
-//		}
+		// Shoot
+		if (rcData[SHOOT] < 1400 || rcData[SHOOT] > 1600)
+		{
+			if (shootWait == 0)
+			{
+				chdkSend(CHDK_SHOOT);
+				Serial.println("[chdk]\t\tshoot");
+				signalLed(SIG_SHOOT);
+				shootWait = WAIT_SHOOT;
+			}
+		}
 
 
 		if (mode == MODE_AURICO)
