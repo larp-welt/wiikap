@@ -41,8 +41,9 @@ void chdkSend(const int command)
 		   cmdQueque[quequeWrite][0] = S_PAUSE;
 		   cmdQueque[quequeWrite][1] = 0;
 		   if (++quequeWrite >= MAX_COMMANDS) quequeWrite = 0;
+
+		   last = micros();
 	}
-	last = micros();
 }
 
 

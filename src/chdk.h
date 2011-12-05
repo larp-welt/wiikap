@@ -21,7 +21,7 @@
 #define S_PAUSE 300
 
 #define MAX_COMMANDS	32
-#define DEADTIME		250  // min. time between to commands
+#define DEADTIME		30000  // min. time between to commands
 
 #define TIMER_CLOCK_FREQ 2000000.0 //2MHz for /8 prescale from 16MHz
 

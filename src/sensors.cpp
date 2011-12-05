@@ -156,16 +156,13 @@ void ACC_Common() {
     }
     // Calculate average, shift Z down by acc_1G and store values in EEPROM at end of calibration
     if (calibratingA == 1) {
-      accZero[ROLL]  = a[ROLL]/400;
       accZero[PAN] = a[PAN]/400;
       accZero[TILT]   = a[TILT]/400-acc_1G; // for nunchuk 200=1G
-      accTrim[ROLL]   = 0;
       accTrim[PAN]  = 0;
       // writeParams(); // XXX write accZero in EEPROM
     }
     calibratingA--;
   }
-  accADC[ROLL]  -=  accZero[ROLL] ;
   accADC[PAN] -=  accZero[PAN];
   accADC[TILT]   -=  accZero[TILT] ;
 }
@@ -478,12 +475,10 @@ uint8_t WMP_getRawADC() {
   // Wii Motion Plus Data
   if ( (rawADC[5]&0x03) == 0x02 ) {
     // Assemble 14bit data 
-    gyroADC[ROLL]  = - ( ((rawADC[5]>>2)<<8) | rawADC[2] ); //range: +/- 8192
     gyroADC[PAN] = - ( ((rawADC[4]>>2)<<8) | rawADC[1] );
     gyroADC[TILT]  =  - ( ((rawADC[3]>>2)<<8) | rawADC[0] );
     GYRO_Common();
     // Check if slow bit is set and normalize to fast mode range
-    gyroADC[ROLL]  = (rawADC[3]&0x01)     ? gyroADC[ROLL]/5  : gyroADC[ROLL];  //the ratio 1/5 is not exactly the IDG600 or ISZ650 specification 
     gyroADC[PAN] = (rawADC[4]&0x02)>>1  ? gyroADC[PAN]/5 : gyroADC[PAN]; //we detect here the slow of fast mode WMP gyros values (see wiibrew for more details)
     gyroADC[TILT]   = (rawADC[3]&0x02)>>1  ? gyroADC[TILT]/5   : gyroADC[TILT];   // this step must be done after zero compensation
     return 1;

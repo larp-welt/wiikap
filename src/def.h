@@ -1,6 +1,9 @@
 #ifndef _DEF_H_
 #define _DEF_H_
 
+#define MODE_AURICO 0
+#define MODE_RC 1
+
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
   #define PROMINI
 #endif

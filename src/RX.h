@@ -9,7 +9,7 @@
 #define MAX_CHAN 8
 
 static int16_t rcData[MAX_CHAN];    // interval [1000;2000]
-static uint8_t pinRcChannel[MAX_CHAN]  = {TILTPIN, PANPIN, SHOOTPIN, ZOOMPIN, EXPOSUREPIN};
+static uint8_t pinRcChannel[MAX_CHAN]  = {PANPIN, TILTPIN, SHOOTPIN, ZOOMPIN, EXPOSUREPIN};
 volatile uint16_t rcPinValue[MAX_CHAN] = {1500,1500,1500,1500,1500}; // interval [1000;2000]
 static int16_t rcData4Values[MAX_CHAN][4];
 static int16_t rcDataMean[MAX_CHAN] ;

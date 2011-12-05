@@ -41,24 +41,27 @@
 //#define AURICO
 
 // RC channels
-#define  TILT         1
 #define  PAN          0
-#define  SHOOT        0
-#define  ZOOM         0
-#define  EXPOSURE     0
-#define  ROLL		  0
+#define  TILT         1
+#define  SHOOT        2
+#define  ZOOM         3
+#define  EXPOSURE     4
 
 // pins for interrupts
-#define  TILTPIN      2
-#define  PANPIN       4
+#define  PANPIN       2
+#define  TILTPIN      4
 #define  SHOOTPIN     5
 #define  ZOOMPIN      6
 #define  EXPOSUREPIN  7
 
 // output pins
-#define  TILTSERVO    0
-#define  PANSERVO     0
-#define  CAMPIN       11
+#define  PANSERVO     A0
+#define  TILTSERVO    A1
+#define  CAMPIN       10
 #define  LEDPIN		  13
+
+// pause
+#define WAIT_SHOOT    50
+#define WAIT_ZOOM	  25
 
 #endif /* CONFIG_H_ */

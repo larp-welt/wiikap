@@ -17,13 +17,10 @@
 // ************************************************************************************************************
 //default board orientation
 #if !defined(ACC_ORIENTATION)
-  #define ACC_ORIENTATION(X, Y, Z)  {accADC[ROLL]  = X; accADC[TILT]  = Y; accADC[PAN]  = Z;}
+  #define ACC_ORIENTATION(X, Y, Z)  {accADC[TILT]  = Y; accADC[PAN]  = Z;}
 #endif
 #if !defined(GYRO_ORIENTATION)
-  #define GYRO_ORIENTATION(X, Y, Z) {gyroADC[ROLL] = X; gyroADC[TILT] = Y; gyroADC[PAN] = Z;}
-#endif
-#if !defined(MAG_ORIENTATION)
-  #define MAG_ORIENTATION(X, Y, Z)  {magADC[ROLL]  = X; magADC[TILT]  = Y; magADC[PAN]  = Z;}
+  #define GYRO_ORIENTATION(X, Y, Z) {gyroADC[TILT] = Y; gyroADC[PAN] = Z;}
 #endif
 
 /*** I2C address ***/
