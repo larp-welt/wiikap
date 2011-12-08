@@ -6,6 +6,9 @@
  * - removed all parts about Arduino Mega
  */
 
+#ifndef _RX_H_
+#define _RX_H_
+
 #define MAX_CHAN 8
 
 static int16_t rcData[MAX_CHAN];    // interval [1000;2000]
@@ -116,3 +119,5 @@ void computeRC() {
     if ( rcDataMean[chan] > rcData[chan] +3)  rcData[chan] = rcDataMean[chan]-2;
   }
 }
+
+#endif // _RX_H_

@@ -11,31 +11,10 @@
 //enable internal I2C pull ups
 #define INTERNAL_I2C_PULLUPS
 
-//if you use independent sensors
-/* I2C gyroscope */
-//#define ITG3200
-//#define L3G4200D
-
-/* I2C accelerometer */
-//#define ADXL345
 #define BMA020
-//#define BMA180
-//#define NUNCHACK  // if you want to use the nunckuk as a standalone I2C ACC without WMP
-//#define LIS3LV02
-
-/* interleaving delay in micro seconds between 2 readings WMP/NK in a WMP+NK config
-   if the ACC calibration time is very long (20 or 30s), try to increase this delay up to 4000
-   it is relevent only for a conf with NK */
-#define INTERLEAVING_DELAY 3000
-
-/* when there is an error on I2C bus, we neutralize the values during a short time. expressed in microseconds
-   it is relevent only for a conf with at least a WMP */
-#define NEUTRALIZE_DELAY 100000
-
-
 
 // define to use stabilisation
-//#define STABI
+#define STABI
 
 // define to enable AuRiCo
 //#define AURICO
@@ -63,5 +42,18 @@
 // pause
 #define WAIT_SHOOT    50
 #define WAIT_ZOOM	  25
+
+// servo const
+#define TILT_PITCH_MIN    1020    //servo travel min, don't set it below 1020
+#define TILT_PITCH_MAX    2000    //servo travel max, max value=2000
+#define TILT_PITCH_MIDDLE 1500    //servo neutral value
+#define TILT_PITCH_PROP   10      //servo proportional (tied to angle) ; can be negative to invert movement
+#define TILT_ROLL_MIN     1020
+#define TILT_ROLL_MAX     2000
+#define TILT_ROLL_MIDDLE  1500
+#define TILT_ROLL_PROP    10
+
+/* some radios have not a neutral point centered on 1500. can be changed here */
+#define MIDRC 1500
 
 #endif /* CONFIG_H_ */
