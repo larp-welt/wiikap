@@ -14,7 +14,7 @@
 
 static int16_t servo[4] = {1500,1500};
 static int16_t rcCommand[4]; // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
-volatile uint8_t atomicServo[2] = {125,125};
+volatile uint8_t atomicServo[3] = {125,125};
 
 
 void writeServos() {
@@ -24,10 +24,10 @@ void writeServos() {
 
 
 void initializeServo() {
-  DIGITAL_TILT_ROLL_PINMODE;
-  DIGITAL_TILT_PITCH_PINMODE;
-  TCCR0A = 0; // normal counting mode
-  TIMSK0 |= (1<<OCIE0A); // Enable CTC interrupt
+	DIGITAL_TILT_ROLL_PINMODE;
+	DIGITAL_TILT_PITCH_PINMODE;
+	TCCR0A = 0; // normal counting mode
+	TIMSK0 |= (1<<OCIE0A); // Enable CTC interrupt
 }
 
 
@@ -54,17 +54,18 @@ ISR(TIMER0_COMPA_vect) {
   static uint8_t state = 0;
   static uint8_t count;
   if (state == 0) {
-	OCR0A+= 250; // 1000 us
+    //http://billgrundmann.wordpress.com/2009/03/03/to-use-or-not-use-writedigital/
+    OCR0A+= 250; // 1000 us
     state++ ;
   } else if (state == 1) {
-    OCR0A+= atomicServo[0]; // 1000 + [0-1020] us
+    OCR0A+= 250; //atomicServo[0]; // 1000 + [0-1020] us
     state++;
   } else if (state == 2) {
     DIGITAL_TILT_PITCH_HIGH;
     OCR0A+= 250; // 1000 us
     state++;
   } else if (state == 3) {
-    OCR0A+= atomicServo[1]; // 1000 + [0-1020] us
+    OCR0A+= atomicServo[0]; // 1 // 1000 + [0-1020] us
     state++;
   } else if (state == 4) {
     DIGITAL_TILT_PITCH_LOW;
@@ -72,7 +73,7 @@ ISR(TIMER0_COMPA_vect) {
     state++;
     OCR0A+= 250; // 1000 us
   } else if (state == 5) {
-    OCR0A+= 250; //atomicServo[2]; // 1000 + [0-1020] us
+    OCR0A+= atomicServo[1]; // 2 // 1000 + [0-1020] us
     state++;
   } else if (state == 6) {
     DIGITAL_TILT_ROLL_LOW;

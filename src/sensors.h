@@ -224,18 +224,17 @@ uint8_t WMP_getRawADC() {
     gyroADC[PANAXIS]  =  - ( ((rawADC[3]>>2)<<8) | rawADC[0] );
     GYRO_Common();
     // Check if slow bit is set and normalize to fast mode range
-    gyroADC[ROLLAXIS]  = (rawADC[3]&0x01)     ? gyroADC[ROLLAXIS]/5  : gyroADC[ROLLAXIS];  //the ratio 1/5 is not exactly the IDG600 or ISZ650 specification
-    gyroADC[TILTAXIS] = (rawADC[4]&0x02)>>1  ? gyroADC[TILTAXIS]/5 : gyroADC[TILTAXIS]; //we detect here the slow of fast mode WMP gyros values (see wiibrew for more details)
-    gyroADC[PANAXIS]   = (rawADC[3]&0x02)>>1  ? gyroADC[PANAXIS]/5   : gyroADC[PANAXIS];   // this step must be done after zero compensation
+    gyroADC[ROLLAXIS]  = (rawADC[3]&0x01)    ? gyroADC[ROLLAXIS]/5 : gyroADC[ROLLAXIS];  //the ratio 1/5 is not exactly the IDG600 or ISZ650 specification
+    gyroADC[TILTAXIS] = (rawADC[4]&0x02)>>1  ? gyroADC[TILTAXIS]/5 : gyroADC[TILTAXIS];  //we detect here the slow of fast mode WMP gyros values (see wiibrew for more details)
+    gyroADC[PANAXIS]   = (rawADC[3]&0x02)>>1 ? gyroADC[PANAXIS]/5  : gyroADC[PANAXIS];   // this step must be done after zero compensation
     return 1;
-//  } else if ( (rawADC[5]&0x03) == 0x00 ) { // Nunchuk Data
-//    ACC_ORIENTATION(  ( (rawADC[3]<<2)      | ((rawADC[5]>>4)&0x02) ) ,
-//                    - ( (rawADC[2]<<2)      | ((rawADC[5]>>3)&0x02) ) ,
-//                      ( ((rawADC[4]>>1)<<3) | ((rawADC[5]>>5)&0x06) ) );
-//    ACC_Common();
-//    return 0;
-  } else
-    return 2;
+  } else if ( (rawADC[5]&0x03) == 0x00 ) { // Nunchuk Data
+    ACC_ORIENTATION(  ( (rawADC[3]<<2)      | ((rawADC[5]>>4)&0x02) ) ,
+                    - ( (rawADC[2]<<2)      | ((rawADC[5]>>3)&0x02) ) ,
+                      ( ((rawADC[4]>>1)<<3) | ((rawADC[5]>>5)&0x06) ) );
+    ACC_Common();
+    return 0;
+  } else return 2;
 }
 
 

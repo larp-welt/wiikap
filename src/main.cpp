@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "RX.h"
 #include "chdk.h"
+#include "camcontroll.h"
 #include "IMU.h"
 #include "output.h"
 
@@ -45,6 +46,7 @@ void setup()
 	Serial.println("[system]\tinit hardware");
 	pinMode(CAMPIN, OUTPUT);
 	pinMode(LEDPIN, OUTPUT);
+	initOutput();
 	#ifndef STABI
 		panServo.attach(PANSERVO);
 		tiltServo.attach(TILTSERVO);
@@ -71,76 +73,45 @@ void setup()
 	Serial.println("[chdk]\t\tset camera defaults");
 	chdkSend(CHDK_EXP_ZERO);
 
-	signalLed(SIG_STARTED);
 	Serial.println("[status]\tstarted");
 	Serial.println();
+
+	currentTime = micros();
 }
 
 
 void loop()
 {
+	const uint8_t auricoPrg[] = AURICO_PROGRAMM;
 	static uint32_t rcTime  = 0;
-	static int exposure = 0;
-	static int shootWait = 0;
-	static int zoomWait = 0;
 	static uint8_t mode = MODE_RC;
+	static uint8_t auricoState = 0;
 
+	currentTime = micros();
 	if (currentTime > rcTime ) { // 50Hz = 20000
 		rcTime = currentTime + 20000;
 
 		computeRC();
 
-//		// Exporsure Mode
-//		if (rcData[EXPOSURE] < 1300 && exposure != -1)
-//		{
-//			chdkSend(CHDK_EXP_MINUS);
-//			Serial.println("[chdk]\t\texposure: minus");
-//			exposure = -1;
-//		}
-//		if (rcData[EXPOSURE] > 1600 && exposure != 1)
-//		{
-//			chdkSend(CHDK_EXP_PLUS);
-//			Serial.println("[chdk]\t\texposure: plus");
-//			exposure = 1;
-//		}
-//		if (rcData[EXPOSURE] > 1300 && rcData[EXPOSURE] < 1600 && exposure != 0)
-//		{
-//			chdkSend(CHDK_EXP_ZERO);
-//			Serial.println("[chdk]\t\texposure: zero");
-//			exposure = 0;
-//		}
-//
-//		// Zoom
-//		if (rcData[ZOOM] < 1300 && zoomWait == 0)
-//		{
-//			chdkSend(CHDK_ZOOM_OUT);
-//			Serial.println("[chdk]\t\tzoom out");
-//			zoomWait = WAIT_ZOOM;
-//		}
-//		if (rcData[ZOOM] > 1600 && zoomWait == 0)
-//		{
-//			chdkSend(CHDK_ZOOM_IN);
-//			Serial.println("[chdk]\t\tzoom in");
-//			zoomWait = WAIT_ZOOM;
-//		}
-//
-//
-//		// Shoot
-//		if (rcData[SHOOT] < 1400 || rcData[SHOOT] > 1600)
-//		{
-//			if (shootWait == 0)
-//			{
-//				chdkSend(CHDK_SHOOT);
-//				Serial.println("[chdk]\t\tshoot");
-//				signalLed(SIG_SHOOT);
-//				shootWait = WAIT_SHOOT;
-//			}
-//		}
-
+		camcontroll();
 
 		if (mode == MODE_AURICO)
 		{
-			/* do all the aurico stuff */
+			/* do all the aurico stuff
+			 *
+			 *   +--> reset tilt
+			 *   |    shoot
+			 *   |    tilt -> shoot
+			 *   |    tilt -> shoot
+			 *   |    tilt -> shoot
+			 *   |    rotate
+			 *   +--- start again
+			 *
+			 *
+			 */
+
+
+
 		}
 
 		// Servos
@@ -151,15 +122,19 @@ void loop()
 		#else
 			computeIMU();
 
-			currentTime = micros();
+			rcTime = micros();
 
-			servo[TILTAXIS] = constrain(TILT_PITCH_MIDDLE + TILT_PITCH_PROP * angle[TILTAXIS] /16 + rcCommand[TILTAXIS], TILT_PITCH_MIN, TILT_PITCH_MAX);
-			servo[ROLLAXIS] = constrain(TILT_ROLL_MIDDLE + TILT_ROLL_PROP   * angle[ROLLAXIS]  /16 + rcCommand[ROLLAXIS], TILT_ROLL_MIN, TILT_ROLL_MAX);
+			servo[TILTAXIS] = constrain(TILT_MIDDLE + TILT_PROP * angle[TILTAXIS] /16 + rcCommand[TILTAXIS], TILT_MIN, TILT_MAX);
+			servo[ROLLAXIS] = constrain(ROLL_MIDDLE + ROLL_PROP * angle[ROLLAXIS] /16 + rcCommand[ROLLAXIS], ROLL_MIN, ROLL_MAX);
+
+//			Serial.print("tilt: ");
+//			Serial.print(servo[TILTAXIS]);
+//			Serial.print("\troll: ");
+//			Serial.print(servo[ROLLAXIS]);
+//			Serial.println();
 
 			writeServos();
 		#endif
 
-		if (shootWait > 0) shootWait--;
-		if (zoomWait > 0) zoomWait--;
 	}
 }

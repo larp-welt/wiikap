@@ -44,16 +44,24 @@
 #define WAIT_ZOOM	  25
 
 // servo const
-#define TILT_PITCH_MIN    1020    //servo travel min, don't set it below 1020
-#define TILT_PITCH_MAX    2000    //servo travel max, max value=2000
-#define TILT_PITCH_MIDDLE 1500    //servo neutral value
-#define TILT_PITCH_PROP   10      //servo proportional (tied to angle) ; can be negative to invert movement
-#define TILT_ROLL_MIN     1020
-#define TILT_ROLL_MAX     2000
-#define TILT_ROLL_MIDDLE  1500
-#define TILT_ROLL_PROP    10
+#define TILT_MIN    1020    //servo travel min, don't set it below 1020
+#define TILT_MAX    2000    //servo travel max, max value=2000
+#define TILT_MIDDLE 1500    //servo neutral value
+#define TILT_PROP   30      // 10 //servo proportional (tied to angle) ; can be negative to invert movement
+#define ROLL_MIN     1020
+#define ROLL_MAX     2000
+#define ROLL_MIDDLE  1500
+#define ROLL_PROP    30	  // 10
 
-/* some radios have not a neutral point centered on 1500. can be changed here */
+// some radios have not a neutral point centered on 1500. can be changed here
 #define MIDRC 1500
+
+// Aurico
+#define AURICO_MODE_TILT 1
+#define AURICO_MODE_SHOOT 2
+#define AURICO_MODE_ROTATE 3
+#define AURICO_MODE_RESET 4
+#define AURICO_MODE_PAUSE 5
+#define AURICO_PROGRAMM {AURICO_MODE_RESET, AURICO_MODE_SHOOT, AURICO_MODE_TILT, AURICO_MODE_SHOOT, AURICO_MODE_TILT, AURICO_MODE_SHOOT, AURICO_MODE_TILT, AURICO_MODE_SHOOT, AURICO_MODE_ROTATE};
 
 #endif /* CONFIG_H_ */

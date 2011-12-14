@@ -35,7 +35,7 @@
 /* Set the Gyro Weight for Gyro/Acc complementary filter */
 /* Increasing this value would reduce and delay Acc influence on the output of the filter*/
 /* Default WMC value: 300*/
-#define GYR_CMPF_FACTOR 310.0f
+#define GYR_CMPF_FACTOR 50.0f   //310.0f
 
 //****** end of advanced users settings *************
 
@@ -168,7 +168,7 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
   }
 
   if ( calibratingA>0 ) {  // Calibration phasis
-    LEDPIN_TOGGLE;
+    if (calibratingA % 5 == 0) { LEDPIN_TOGGLE };
   } else {
 	LEDPIN_ON;
   }
