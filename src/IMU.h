@@ -164,6 +164,7 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
   // mapping rcData to a value from -500 to 500 with the center = 0
   for(axis=0;axis<2;axis++) {
     rcCommand[axis] = min(abs(rcData[axis]-MIDRC),500);
+    rcCommand[axis] = 1500; // XXX: Remove after test!
     if (rcData[axis]<MIDRC) rcCommand[axis] = -rcCommand[axis];
   }
 

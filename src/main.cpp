@@ -12,6 +12,11 @@
  *  http://www.colorful-sky.de/
  */
 
+/* TODO:
+ * - Ausgabepins der Servos sauber definieren
+ * - Roll besser vorbereiten
+ */
+
 #include <WProgram.h>
 #include "blinkcodes.h"
 #include "def.h"
@@ -28,6 +33,10 @@
 	Servo panServo;
 	Servo tiltServo;
 #endif
+
+
+// XXX: EEPROM
+static uint8_t P8 = 40, I8 = 30, D8 = 23; //8 bits is much faster and the code is much shorter
 
 
 void setup()
@@ -82,10 +91,22 @@ void setup()
 
 void loop()
 {
-	const uint8_t auricoPrg[] = AURICO_PROGRAMM;
 	static uint32_t rcTime  = 0;
 	static uint8_t mode = MODE_RC;
-	static uint8_t auricoState = 0;
+
+	#ifdef AURICO
+		const uint8_t auricoPrg[] = AURICO_PROGRAMM;
+		static uint8_t auricoState = 0;
+	#endif
+
+	int16_t delta,deltaSum;
+	int16_t PTerm,ITerm,DTerm;
+	int16_t panPID;
+	int16_t error;
+	static int16_t errorGyroI = 0;
+	static int16_t lastGyro = 0;
+	static int16_t delta1,delta2;
+
 
 	currentTime = micros();
 	if (currentTime > rcTime ) { // 50Hz = 20000
@@ -124,13 +145,40 @@ void loop()
 
 			rcTime = micros();
 
-			servo[TILTAXIS] = constrain(TILT_MIDDLE + TILT_PROP * angle[TILTAXIS] /16 + rcCommand[TILTAXIS], TILT_MIN, TILT_MAX);
-			servo[ROLLAXIS] = constrain(ROLL_MIDDLE + ROLL_PROP * angle[ROLLAXIS] /16 + rcCommand[ROLLAXIS], ROLL_MIN, ROLL_MAX);
+			//**** PITCH & ROLL & YAW PID ****
+			if (abs(rcCommand[PAN])<350) error = rcCommand[PAN]*10*8/P8 ; //16 bits is needed for calculation: 350*10*8 = 28000      16 bits is ok for result if P8>2 (P>0.2)
+			else error = (int32_t)rcCommand[PAN]*10*8/P8 ; //32 bits is needed for calculation: 500*5*10*8 = 200000   16 bits is ok for result if P8>2 (P>0.2)
+			error -= gyroData[PANAXIS];
 
-//			Serial.print("tilt: ");
-//			Serial.print(servo[TILTAXIS]);
-//			Serial.print("\troll: ");
-//			Serial.print(servo[ROLLAXIS]);
+			PTerm = rcCommand[PAN];
+
+			errorGyroI  = constrain(errorGyroI+error,-16000,+16000);          //WindUp //16 bits is ok here
+			if (abs(gyroData[PANAXIS])>640) errorGyroI = 0;
+			ITerm = (errorGyroI/125*I8)>>6;                                   //16 bits is ok here 16000/125 = 128 ; 128*250 = 32000
+
+
+			if (abs(gyroData[PANAXIS])<160) PTerm -= gyroData[PANAXIS]*P8/10/8; //16 bits is needed for calculation   160*200 = 32000         16 bits is ok for result
+			else PTerm -= (int32_t)gyroData[PANAXIS]*P8/10/8; //32 bits is needed for calculation
+
+			delta    = gyroData[PANAXIS] - lastGyro;                               //16 bits is ok here, the dif between 2 consecutive gyro reads is limited to 800
+			lastGyro = gyroData[PANAXIS];
+			deltaSum = delta1+delta2+delta;
+			delta2   = delta1;
+			delta1   = delta;
+
+			if (abs(deltaSum)<640) DTerm = (deltaSum*D8)>>5; //16 bits is needed for calculation 640*50 = 32000           16 bits is ok for result
+			else DTerm = ((int32_t)deltaSum*D8)>>5;          //32 bits is needed for calculation
+
+			panPID =  PTerm + ITerm - DTerm;
+
+			servo[TILTAXIS] = constrain(TILT_MIDDLE + TILT_PROP * angle[TILTAXIS] /16 + rcCommand[TILT], TILT_MIN, TILT_MAX);
+			servo[PANAXIS]  = constrain(PAN_MIDDLE  + PAN_PROP  * panPID, PAN_MIN,  PAN_MAX); // XXX ???
+			#ifdef ROLLSTABI
+				servo[ROLLAXIS] = constrain(ROLL_MIDDLE + ROLL_PROP * angle[ROLLAXIS] /16 + RCROLL, ROLL_MIN, ROLL_MAX);
+			#endif
+
+//			Serial.print("pan:\t");
+//			Serial.print(servo[PANAXIS]);
 //			Serial.println();
 
 			writeServos();

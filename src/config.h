@@ -15,6 +15,13 @@
 
 // define to use stabilisation
 #define STABI
+//define ROLLSTABI
+
+#ifdef ROLLSTABI
+	#define RCROLL	rcCommand[ROLL]
+#else
+	#define RCROLL	1500
+#endif
 
 // define to enable AuRiCo
 //#define AURICO
@@ -25,6 +32,7 @@
 #define  SHOOT        2
 #define  ZOOM         3
 #define  EXPOSURE     4
+//#define  ROLL		  5
 
 // pins for interrupts
 #define  PANPIN       2
@@ -48,10 +56,16 @@
 #define TILT_MAX    2000    //servo travel max, max value=2000
 #define TILT_MIDDLE 1500    //servo neutral value
 #define TILT_PROP   30      // 10 //servo proportional (tied to angle) ; can be negative to invert movement
+
 #define ROLL_MIN     1020
 #define ROLL_MAX     2000
 #define ROLL_MIDDLE  1500
 #define ROLL_PROP    30	  // 10
+
+#define PAN_MIN     1020
+#define PAN_MAX     2000
+#define PAN_MIDDLE  1500
+#define PAN_PROP    10
 
 // some radios have not a neutral point centered on 1500. can be changed here
 #define MIDRC 1500

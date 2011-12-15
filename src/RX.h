@@ -117,7 +117,6 @@ void computeRC() {
     rcDataMean[chan]= (rcDataMean[chan]+2)/4;
     if ( rcDataMean[chan] < rcData[chan] -3)  rcData[chan] = rcDataMean[chan]+2;
     if ( rcDataMean[chan] > rcData[chan] +3)  rcData[chan] = rcDataMean[chan]-2;
-    rcData[chan] = 1500;   // XXX TEST
   }
 }
 
