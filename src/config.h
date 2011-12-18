@@ -1,7 +1,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#define  VERSION  "0.1"
+#define  VERSION  1  // Byte!
 
 // Hardware
 #define SERIAL_COM_SPEED 9600
@@ -15,7 +15,7 @@
 
 // define to use stabilisation
 #define STABI
-//define ROLLSTABI
+//#define ROLLSTABI
 
 #ifdef ROLLSTABI
 	#define RCROLL	rcCommand[ROLL]
