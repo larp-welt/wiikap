@@ -37,7 +37,7 @@ void writeParams() {
 
 void checkFirstTime() {
   uint8_t test_val; eeprom_read_block((void*)&test_val, (void*)(0), sizeof(test_val));
-  if (test_val == checkNewConf) return;
+  //if (test_val == checkNewConf) return;
   P8 = 40;
   I8 = 30;
   D8 = 23;

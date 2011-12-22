@@ -13,7 +13,7 @@
 
 #define ROLLAXIS 0
 #define TILTAXIS 1		// TILT
-#define PANAXIS 2		// PAN
+#define PANAXIS  2		// PAN
 
 #define NEUTRALIZE_DELAY 100000
 
@@ -57,7 +57,7 @@ void i2c_init(void) {
 
 
 void waitTransmissionI2C() {
-  uint16_t count = 255;
+  uint16_t count = 500;
   while (!(TWCR & (1<<TWINT))) {
     count--;
     if (count==0) {              //we are in a blocking state => we don't insist
@@ -210,11 +210,11 @@ uint8_t WMP_getRawADC() {
   TWBR = ((16000000L / I2C_SPEED) - 16) / 2; // change the I2C clock rate
   i2c_getSixRawADC(0xA4,0x00);
 
-  if (micros() < (neutralizeTime + NEUTRALIZE_DELAY)) {//we neutralize data in case of blocking+hard reset state
-    for (axis = 0; axis < 3; axis++) {gyroADC[axis]=0;accADC[axis]=0;}
-    accADC[PANAXIS] = acc_1G;
-    return 1;
-  }
+//  if (micros() < (neutralizeTime + NEUTRALIZE_DELAY)) {//we neutralize data in case of blocking+hard reset state
+//    for (axis = 0; axis < 3; axis++) {gyroADC[axis]=0; accADC[axis]=0;}
+//    accADC[PANAXIS] = acc_1G;
+//    return 1;
+//  }
 
   // Wii Motion Plus Data
   if ( (rawADC[5]&0x03) == 0x02 ) {
@@ -239,11 +239,14 @@ uint8_t WMP_getRawADC() {
 
 
 void WMP_init() {
-  delay(250);
-  i2c_writeReg(0xA6, 0xF0, 0x55); // Initialize Extension
-  delay(250);
-  i2c_writeReg(0xA6, 0xFE, 0x05); // Activate Nunchuck pass-through mode
-  delay(250);
+	delay(250);
+	i2c_writeReg(0xA6, 0xF0, 0x55); // Initialize Extension
+	delay(250);
+	i2c_writeReg(0xA6, 0xFE, 0x05); // Activate Nunchuck pass-through mode
+	delay(250);
+
+	acc_1G = 200;
+	acc_25deg = acc_1G * 0.423;
 }
 
 
