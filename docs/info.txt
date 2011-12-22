@@ -1,0 +1,13 @@
+Pin-Belegung
+
+	Input
+		Pan			2
+		Tilt		4
+		Shoot		5
+		Zoom		6
+		Exposure	7
+	
+	Output
+		Pan			A0
+		Tilt		A1
+		CHDK		10	- Kamerasteuerung
