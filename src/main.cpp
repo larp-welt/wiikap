@@ -28,7 +28,7 @@
 #include "camcontroll.h"
 #include "IMU.h"
 #include "output.h"
-#include "serial.h"
+//#include "serial.h"
 
 
 void setup()
@@ -87,11 +87,6 @@ void loop()
 	if (currentTime > rcTime ) { // 50Hz = 20000
 		rcTime = currentTime + 20000;
 
-		if (Serial.available() > 0)
-		{
-			// read command...
-		}
-
 		computeRC();
 
 		camcontroll();
@@ -128,6 +123,7 @@ void loop()
 			//**** PITCH & ROLL & YAW PID ****
 			if (abs(rcCommand[PAN])<350) error = rcCommand[PAN]*10*8/P8 ; //16 bits is needed for calculation: 350*10*8 = 28000      16 bits is ok for result if P8>2 (P>0.2)
 			else error = (int32_t)rcCommand[PAN]*10*8/P8 ; //32 bits is needed for calculation: 500*5*10*8 = 200000   16 bits is ok for result if P8>2 (P>0.2)
+
 			error -= gyroData[PANAXIS];
 
 			PTerm = rcCommand[PAN];
@@ -151,10 +147,18 @@ void loop()
 
 			panPID =  PTerm + ITerm - DTerm;
 
-			servo[TILTAXIS] = constrain(TILT_MIDDLE + TILT_PROP * angle[TILTAXIS] /16 + rcCommand[TILT], TILT_MIN, TILT_MAX);
-			servo[PANAXIS]  = constrain(PAN_MIDDLE  + PAN_PROP  * panPID, PAN_MIN,  PAN_MAX); // XXX ???
+			servo[TILT] = constrain(TILT_MIDDLE + TILT_PROP * angle[TILTAXIS] /16 + rcCommand[TILT], TILT_MIN, TILT_MAX);
+			servo[PAN]  = constrain(PAN_MIDDLE  + PAN_PROP  * panPID, PAN_MIN,  PAN_MAX); // XXX ???
+
+			Serial.print("   Tilt: "); Serial.print(servo[TILT]);
+			Serial.print("    Pan: "); Serial.print(servo[PAN]);
+			Serial.print("  Angle: "); Serial.print(angle[TILTAXIS]/16);
+			Serial.print("   Gyro: "); Serial.print(gyroData[PANAXIS]);
+			Serial.print(" panPid: "); Serial.print(panPID);
+			Serial.println();
+
 			#ifdef ROLLSTABI
-				servo[ROLLAXIS] = constrain(ROLL_MIDDLE + ROLL_PROP * angle[ROLLAXIS] /16 + RCROLL, ROLL_MIN, ROLL_MAX);
+				servo[ROLL] = constrain(ROLL_MIDDLE + ROLL_PROP * angle[ROLLAXIS] /16 + RCROLL, ROLL_MIN, ROLL_MAX);
 			#endif
 
 			writeServos();

@@ -9,6 +9,8 @@
 #ifndef _RX_H_
 #define _RX_H_
 
+#include "config.h"
+
 #define MAX_CHAN 8
 
 static int16_t rcData[MAX_CHAN];    // interval [1000;2000]
@@ -106,18 +108,22 @@ uint16_t readRawRC(uint8_t chan) {
 
 
 void computeRC() {
-  static uint8_t rc4ValuesIndex = 0;
-  uint8_t chan,a;
+	static uint8_t rc4ValuesIndex = 0;
+	uint8_t chan,a;
 
-  rc4ValuesIndex++;
-  for (chan = 0; chan < MAX_CHAN; chan++) {
-    rcData4Values[chan][rc4ValuesIndex%4] = readRawRC(chan);
-    rcDataMean[chan] = 0;
-    for (a=0;a<4;a++) rcDataMean[chan] += rcData4Values[chan][a];
-    rcDataMean[chan]= (rcDataMean[chan]+2)/4;
-    if ( rcDataMean[chan] < rcData[chan] -3)  rcData[chan] = rcDataMean[chan]+2;
-    if ( rcDataMean[chan] > rcData[chan] +3)  rcData[chan] = rcDataMean[chan]-2;
-  }
+	rc4ValuesIndex++;
+	for (chan = 0; chan < MAX_CHAN; chan++) {
+		rcData4Values[chan][rc4ValuesIndex%4] = readRawRC(chan);
+		rcDataMean[chan] = 0;
+		for (a=0;a<4;a++) rcDataMean[chan] += rcData4Values[chan][a];
+		rcDataMean[chan]= (rcDataMean[chan]+2)/4;
+		if ( rcDataMean[chan] < rcData[chan] -3)  rcData[chan] = rcDataMean[chan]+2;
+		if ( rcDataMean[chan] > rcData[chan] +3)  rcData[chan] = rcDataMean[chan]-2;
+	}
+	#ifdef NORC
+		for (chan = 0; chan < MAX_CHAN; chan++) { rcData[chan] = 1500; }
+	#endif
+
 }
 
 #endif // _RX_H_

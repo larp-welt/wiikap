@@ -16,6 +16,7 @@
 // define to use stabilisation
 #define STABI
 //#define ROLLSTABI
+#define NORC
 
 #ifdef ROLLSTABI
 	#define RCROLL	rcCommand[ROLL]
@@ -55,12 +56,12 @@
 #define TILT_MIN    1020    //servo travel min, don't set it below 1020
 #define TILT_MAX    2000    //servo travel max, max value=2000
 #define TILT_MIDDLE 1500    //servo neutral value
-#define TILT_PROP   30      // 10 //servo proportional (tied to angle) ; can be negative to invert movement
+#define TILT_PROP   10      //servo proportional (tied to angle) ; can be negative to invert movement
 
 #define ROLL_MIN     1020
 #define ROLL_MAX     2000
 #define ROLL_MIDDLE  1500
-#define ROLL_PROP    30	  // 10
+#define ROLL_PROP    10
 
 #define PAN_MIN     1020
 #define PAN_MAX     2000
