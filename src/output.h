@@ -18,14 +18,17 @@ volatile uint8_t atomicServo[3] = {125,125};
 
 
 void writeServos() {
-    atomicServo[0] = (servo[0]-1000)/4;
-    atomicServo[1] = (servo[1]-1000)/4;
+    atomicServo[PAN] = (servo[PAN]-1000)/4;
+    atomicServo[TILT] = (servo[TILT]-1000)/4;
+	#ifdef ROLLSTABI
+		atomitServo[ROLL] = (servo[ROLL]-1000)/4;
+	#endif
 }
 
 
 void initializeServo() {
-	DIGITAL_TILT_ROLL_PINMODE;
-	DIGITAL_TILT_PITCH_PINMODE;
+	TILT_PINMODE;
+	PAN_PINMODE;
 	TCCR0A = 0; // normal counting mode
 	TIMSK0 |= (1<<OCIE0A); // Enable CTC interrupt
 }
@@ -36,9 +39,6 @@ void initOutput() {
 }
 
 
-/*
- * XXX: Das muss ich noch verstehen, und vereinfachen für 2 Servos! Ist zur Zeit für 4 Servos!
- */
 // ****servo yaw with a 50Hz refresh rate****
 // prescaler is set by default to 64 on Timer0
 // Duemilanove : 16MHz / 64 => 4 us
@@ -61,28 +61,34 @@ ISR(TIMER0_COMPA_vect) {
     OCR0A+= 250; //atomicServo[0]; // 1000 + [0-1020] us
     state++;
   } else if (state == 2) {
-    DIGITAL_TILT_PITCH_HIGH;
+    PAN_HIGH;
     OCR0A+= 250; // 1000 us
     state++;
   } else if (state == 3) {
-    OCR0A+= atomicServo[0]; // 1 // 1000 + [0-1020] us
+    OCR0A+= atomicServo[PAN]; // 1000 + [0-1020] us
     state++;
   } else if (state == 4) {
-    DIGITAL_TILT_PITCH_LOW;
-    DIGITAL_TILT_ROLL_HIGH;
+    PAN_LOW;
+    TILT_HIGH;
     state++;
     OCR0A+= 250; // 1000 us
   } else if (state == 5) {
-    OCR0A+= atomicServo[1]; // 2 // 1000 + [0-1020] us
+    OCR0A+= atomicServo[TILT]; // 1000 + [0-1020] us
     state++;
   } else if (state == 6) {
-    DIGITAL_TILT_ROLL_LOW;
+    TILT_LOW;
     state++;
+    ROLL_HIGHT
     OCR0A+= 250; // 1000 us
   } else if (state == 7) {
-    OCR0A+= 250; //atomicServo[3]; // 1000 + [0-1020] us
+	#ifdef ROLLSTABI
+		OCR0A+= atomicServo[ROLL]; // 1000 + [0-1020] us
+	#else
+		OCR0A+= 250;
+	#endif
     state++;
   } else if (state == 8) {
+	ROLL_LOW
     count = 10; // 12 x 1000 us
     state++;
     OCR0A+= 250; // 1000 us
