@@ -9,7 +9,7 @@
 #ifndef _RX_H_
 #define _RX_H_
 
-#include "config.h"
+#include "Arduino.h"
 
 #define MAX_CHAN 8
 

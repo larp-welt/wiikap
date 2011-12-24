@@ -4,7 +4,7 @@
 #define  VERSION  1  // Byte!
 
 // Hardware
-#define SERIAL_COM_SPEED 9600
+#define SERIAL_COM_SPEED 115200
 #define I2C_SPEED 100000L     //100kHz normal mode, this value must be used for a genuine WMP
 //#define I2C_SPEED 400000L   //400kHz fast mode, it works only with some WMP clones
 
@@ -66,7 +66,7 @@
 #define PAN_MIN     1020
 #define PAN_MAX     2000
 #define PAN_MIDDLE  1500
-#define PAN_PROP    10
+#define PAN_PROP    2
 
 // some radios have not a neutral point centered on 1500. can be changed here
 #define MIDRC 1500

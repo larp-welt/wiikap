@@ -9,7 +9,7 @@
  */
 
 #include <string.h>
-#include <WProgram.h>
+#include <Arduino.h>
 #include "config.h"
 #include "chdk.h"
 

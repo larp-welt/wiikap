@@ -8,7 +8,7 @@
 #ifndef _SENSORS_H_
 #define _SENSORS_H_
 
-#include <WProgram.h>
+#include <Arduino.h>
 #include "def.h"
 
 #define ROLLAXIS 0

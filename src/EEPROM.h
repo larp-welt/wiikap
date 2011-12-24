@@ -1,6 +1,6 @@
 #include <avr/eeprom.h>
 
-static uint8_t checkNewConf = 147;
+static uint8_t checkNewConf = 151;
 static uint8_t P8, I8, D8; //8 bits is much faster and the code is much shorter
 
 typedef struct eep_entry_t{
@@ -36,8 +36,10 @@ void writeParams() {
 }
 
 void checkFirstTime() {
-  uint8_t test_val; eeprom_read_block((void*)&test_val, (void*)(0), sizeof(test_val));
-  //if (test_val == checkNewConf) return;
+  uint8_t test_val;
+  eeprom_read_block((void*)&test_val, (void*)(0), sizeof(test_val));
+
+  if (test_val == checkNewConf) return;
   P8 = 40;
   I8 = 30;
   D8 = 23;

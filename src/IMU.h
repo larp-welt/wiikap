@@ -1,8 +1,9 @@
-#include <WProgram.h>
+#include <Arduino.h>
 #include "def.h"
 #include "sensors.h"
 #include "RX.h"
 #include "output.h"
+#include "serial.h"
 
 // **************************************************
 // Simplified IMU based on "Complementary Filter"
@@ -168,7 +169,7 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
   }
 
   if ( calibratingA>0 || calibratingG>0) {  // Calibration phasis
-	if (micros() % 200 == 0) { LEDPIN_TOGGLE };
+	if (micros() % 20 == 0) { LEDPIN_TOGGLE; }
   } else {
 	LEDPIN_ON;
   }
@@ -181,15 +182,9 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
     } else
       calibratedACC = 1;
   }
+
+  serialCom();
 }
-
-
-#define UPDATE_INTERVAL 25000    // 40hz update rate (20hz LPF on acc)
-#define INIT_DELAY      4000000  // 4 sec initialization delay
-#define Kp1 0.55f                // PI observer velocity gain 
-#define Kp2 1.0f                 // PI observer position gain
-#define Ki  0.001f               // PI observer integral gain (bias cancellation)
-#define dt  (UPDATE_INTERVAL / 1000000.0f)
 
 
 void computeIMU()
