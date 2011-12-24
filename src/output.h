@@ -8,13 +8,13 @@
 #ifndef OUTPUT_H_
 #define OUTPUT_H_
 
-#include <WProgram.h>
+#include <Arduino.h>
 #include "def.h"
 
 
-static int16_t servo[4] = {1500,1500};
+static int16_t servo[4] = {1500,1500,1500,1500};
 static int16_t rcCommand[4]; // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
-volatile uint8_t atomicServo[3] = {125,125};
+volatile uint8_t atomicServo[3] = {125,125,125};
 
 
 void writeServos() {

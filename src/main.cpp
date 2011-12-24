@@ -19,7 +19,7 @@
  * - Konfiguration über Serial
  */
 
-#include <WProgram.h>
+#include <Arduino.h>
 #include "def.h"
 #include "utils.h"
 #include "EEPROM.h"
@@ -28,14 +28,12 @@
 #include "camcontroll.h"
 #include "IMU.h"
 #include "output.h"
-//#include "serial.h"
 
 
 void setup()
 {
 	// setup serial communication for debugging
 	Serial.begin(SERIAL_COM_SPEED);
-	Serial.flush();
 
 	// setup hardware
 	pinMode(CAMPIN, OUTPUT);
@@ -44,7 +42,9 @@ void setup()
 	POWERPIN_PINMODE;
 	POWERPIN_OFF;
 
+	readEEPROM();
 	checkFirstTime();
+
 	initSensors();
 	calibratingA = 400;
 	calibratingG = 400;
@@ -149,14 +149,6 @@ void loop()
 
 			servo[TILT] = constrain(TILT_MIDDLE + TILT_PROP * angle[TILTAXIS] /16 + rcCommand[TILT], TILT_MIN, TILT_MAX);
 			servo[PAN]  = constrain(PAN_MIDDLE  + PAN_PROP  * panPID, PAN_MIN,  PAN_MAX); // XXX ???
-
-			Serial.print("   Tilt: "); Serial.print(servo[TILT]);
-			Serial.print("    Pan: "); Serial.print(servo[PAN]);
-			Serial.print("  Angle: "); Serial.print(angle[TILTAXIS]/16);
-			Serial.print("   Gyro: "); Serial.print(gyroData[PANAXIS]);
-			Serial.print(" panPid: "); Serial.print(panPID);
-			Serial.println();
-
 			#ifdef ROLLSTABI
 				servo[ROLL] = constrain(ROLL_MIDDLE + ROLL_PROP * angle[ROLLAXIS] /16 + RCROLL, ROLL_MIN, ROLL_MAX);
 			#endif
